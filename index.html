@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Metadata: No display -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+  <style>
+    /* Comment of CSS */
+    /* For who (id, class, DOM) 2. On what*/
+   
+
+  </style>
+</head>
+<body>
+  <!-- Displayed data -->
+  <div class="container">
+    <div class="header form-input">
+      Register form
+    </div>
+    <div class = "flex form-input">
+      <div class="header-form">Real name </div>
+      <input class="form" name="firstname" type="text">
+    </div>
+    <div class = "flex form-input">
+      <div class="header-form">Surename</div> 
+      <input class="form" name="lastname" type="text">
+    </div>
+    <div class = "flex form-input">
+      <div class="header-form"> Age </div>
+      <input class="form" name="age" type="number" min="0" max="100">
+    </div>
+    
+    <div class=" flex gender form-input">
+      <div class="header-form">Gender</div>
+      <div class="flex">
+        <div>
+          <input name="gender" type="radio" value="male"> Male
+        </div>
+        <div>
+          <input name="gender" type="radio" value="female"> Female
+        </div>
+        <div>
+          <input name="gender" type="radio" value="gaye"> Gaye
+        </div>
+        
+      </div>
+    </div>
+    <div class="form-input">
+      Interest
+      <div>
+        <input name="interest" type="checkbox" value="book"> Book
+      </div>
+      <div>
+        <input name="interest" type="checkbox" value="game"> Video Game
+      </div>
+      <div>
+        <input name="interest" type="checkbox" value="programming"> Programming
+      </div>
+    </div>
+    <div class="form-input">
+      Details
+      <div>
+        <textarea name="description">
+
+        </textarea>
+      </div>
+      <div class="form-input center">
+        <a href="https://www.google.co.th/">T&C</a>
+      </div>
+      <div class="center">
+        <button onclick="submitData()" class="button">
+          Submit
+        </button>
+      </div>
+      
+    </div>
+   </div>
+  <!-- 3. form -->
+  <script src="main.js"></script>
+</body>
+</html>
