@@ -1,14 +1,50 @@
-const http = require('http')
+const express = require('express')
+const app = express()
+const bodyparser = require('body-parser')
+const port = 8000
 
-const host = 'localhost'
-const port = 8888
+app.use(bodyparser.json())
 
-const requestListener = function(req, res){
-  res.writeHead(200)
-  res.end("My first server!")
-}
+let users = []
+let counter = 1
 
-const server = http.createServer(requestListener)
-server.listen(port, host, ()=> {
-  console.log(`Server is running on http://${host}:${port}`)
+
+app.get('/users', (req, res) => {
+  res.json(users)
+})
+
+//path = POST / user
+
+app.post('/user', (req, res) => {
+  let user = req.body
+  user.id = counter
+  counter += 1
+  users.push(user)
+  res.json({
+    message: 'add ok',
+    user: user
+  })
+})
+
+app.put('/user/:id', (req, res) => {
+  let id = req.params.id
+  let updateUser = req.body
+  //find user
+  let selectedIndex = users.findIndex(user => user.id == id)
+
+  //update that user
+  users[selectedIndex].firstname = updateUser.firstname || users[selectedIndex].firstname
+  users[selectedIndex].lastname = updateUser.lasttname || users[selectedIndex].lastname
+
+  res.json({
+    message: 'update user complete',
+    data: {
+      user: updateUser,
+      indexUpdate: selectedIndex,
+    }
+  })
+})
+
+app.listen(port, (req, res) => {
+  console.log('http server run at ' + port)
 })
