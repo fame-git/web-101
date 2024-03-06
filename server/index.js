@@ -10,7 +10,24 @@ let counter = 1
 
 
 app.get('/users', (req, res) => {
-  res.json(users)
+  const filterUsers = users.map(user => {
+    return {
+      id: user.id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      fullname: user.firstname + ' ' + user.lastname
+    }
+  })
+  res.json(filterUsers)
+})
+
+
+app.get('/users/:id', (req, res) => {
+  let id = req.params.id
+
+  let selectedIndex = users.findIndex(user => user.id == id)
+ 
+  res.json(users[selectedIndex])
 })
 
 //path = POST / user
@@ -32,9 +49,21 @@ app.put('/user/:id', (req, res) => {
   //find user
   let selectedIndex = users.findIndex(user => user.id == id)
 
+
+  //patch approach
   //update that user
+  // if (updateUser.firstname){
+  //   users[selectedIndex].firstname = updateUser.firstname
+  // }
+  // if (updateUser.lastname) {
+  //   users[selectedIndex].lastname = users[selectedIndex].lastname
+  // }
+
+  //put approach
   users[selectedIndex].firstname = updateUser.firstname || users[selectedIndex].firstname
-  users[selectedIndex].lastname = updateUser.lasttname || users[selectedIndex].lastname
+  users[selectedIndex].lastname = users[selectedIndex].lastname || users[selectedIndex].lastname
+  users[selectedIndex].age = updateUser.age || users[selectedIndex].age
+  users[selectedIndex].gender = updateUser.gender || users[selectedIndex].gender
 
   res.json({
     message: 'update user complete',
@@ -43,6 +72,24 @@ app.put('/user/:id', (req, res) => {
       indexUpdate: selectedIndex,
     }
   })
+})
+
+app.delete('user/:id', (req, res)=>{
+  let id = req.params.id
+
+  //find index
+  let selectedIndex = users.findIndex(user => user.id == id)
+
+  // delete
+  users.splice(selectedIndex, 1)
+
+  res.json({
+    message: 'deleted complete',
+    idexDeleted: selectedIndex
+  })
+  
+
+
 })
 
 app.listen(port, (req, res) => {
