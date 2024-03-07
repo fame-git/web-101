@@ -2,9 +2,11 @@ const express = require('express')
 const app = express()
 const bodyparser = require('body-parser')
 const mysql = require('mysql2/promise')
+const cors = require('cors')
 const port = 8000
 
 app.use(bodyparser.json())
+app.use(cors())
 
 let users = []
 
