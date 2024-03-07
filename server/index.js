@@ -1,97 +1,110 @@
 const express = require('express')
 const app = express()
 const bodyparser = require('body-parser')
+const mysql = require('mysql2/promise')
 const port = 8000
 
 app.use(bodyparser.json())
 
 let users = []
-let counter = 1
 
+let conn = null
 
-app.get('/users', (req, res) => {
-  const filterUsers = users.map(user => {
-    return {
-      id: user.id,
-      firstname: user.firstname,
-      lastname: user.lastname,
-      fullname: user.firstname + ' ' + user.lastname
-    }
+const initMySQL = async () => {
+  conn = await mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'my_secret_password',
+    database: 'app_db',
+    port: 3306
   })
-  res.json(filterUsers)
+}
+
+
+app.get('/users',  async(req, res) => {
+  const results = conn.query('SELECT * FROM users')
+    res.json(results[0])
 })
 
 
-app.get('/users/:id', (req, res) => {
-  let id = req.params.id
+app.get('/users/:id', async(req, res) => {
+  try {
+    let id = req.params.id
+    const results = await conn.query('SELECT * FROM users WHERE id = ?', id)
 
-  let selectedIndex = users.findIndex(user => user.id == id)
- 
-  res.json(users[selectedIndex])
+    if(results[0].length == 0){
+      throw {statusCode: 404, message: 'not found' } 
+    }
+    res.json(results[0][0])
+  }catch (error) {
+    console.error('error message', error.message)
+    let statusCode = error.statusCode || 500
+    res.status(statusCode).json({
+      message: 'something wrong',
+      errorMessage: error.message
+    })
+  }
 })
 
 //path = POST / user
 
-app.post('/user', (req, res) => {
-  let user = req.body
-  user.id = counter
-  counter += 1
-  users.push(user)
-  res.json({
-    message: 'add ok',
-    user: user
-  })
+app.post('/user', async (req, res) => {
+  try {
+    let user = req.body
+    const results = await conn.query('INSERT INTO users SET ?', user)
+    res.json({
+      message: 'insert ok',
+      data: results[0]
+    })
+  }catch(error){
+    console.error('error message', error.message)
+    res.status(500).json({
+      message: 'something wrong',
+    })
+  }
 })
 
-app.put('/user/:id', (req, res) => {
-  let id = req.params.id
-  let updateUser = req.body
-  //find user
-  let selectedIndex = users.findIndex(user => user.id == id)
-
-
-  //patch approach
-  //update that user
-  // if (updateUser.firstname){
-  //   users[selectedIndex].firstname = updateUser.firstname
-  // }
-  // if (updateUser.lastname) {
-  //   users[selectedIndex].lastname = users[selectedIndex].lastname
-  // }
-
-  //put approach
-  users[selectedIndex].firstname = updateUser.firstname || users[selectedIndex].firstname
-  users[selectedIndex].lastname = users[selectedIndex].lastname || users[selectedIndex].lastname
-  users[selectedIndex].age = updateUser.age || users[selectedIndex].age
-  users[selectedIndex].gender = updateUser.gender || users[selectedIndex].gender
-
-  res.json({
-    message: 'update user complete',
-    data: {
-      user: updateUser,
-      indexUpdate: selectedIndex,
-    }
-  })
+app.put('/user/:id', async (req, res) => {
+  
+  try {
+    let id = req.params.id
+    let updateUser = req.body
+    const results = await conn.query('UPDATE users SET ? WHERE id = ?', 
+      [updateUser, id]
+    )
+    res.json({
+      message: 'update ok',
+      data: results[0]
+    })
+  }catch(error){
+    console.error('error message', error.message)
+    res.status(500).json({
+      message: 'something wrong',
+    })
+  }
+  
 })
 
-app.delete('user/:id', (req, res)=>{
-  let id = req.params.id
-
-  //find index
-  let selectedIndex = users.findIndex(user => user.id == id)
-
-  // delete
-  users.splice(selectedIndex, 1)
-
-  res.json({
-    message: 'deleted complete',
-    idexDeleted: selectedIndex
-  })
+app.delete('user/:id', async(req, res)=>{
+  try {
+    let id = req.params.id
+    const results = await conn.query('DELETE from users WHERE id = ?', id)
+    res.json({
+      message: 'delete ok',
+      data: results[0]
+    })
+  }catch(error){
+    console.error('error message', error.message)
+    res.status(500).json({
+      message: 'something wrong',
+    })
+  }
   
 
 
 })
 
-app.listen(port, (req, res) => {
+app.listen(port, async (req, res) => {
+  await initMySQL()
   console.log('http server run at ' + port)
 })
