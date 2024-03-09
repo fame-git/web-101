@@ -18,7 +18,7 @@ const initMySQL = async () => {
     user: 'root',
     password: 'my_secret_password',
     database: 'app_db',
-    port: 3306
+    port: 6033,
   })
 }
 
@@ -50,7 +50,7 @@ app.get('/users/:id', async(req, res) => {
 
 //path = POST / user
 
-app.post('/user', async (req, res) => {
+app.post('/users', async (req, res) => {
   try {
     let user = req.body
     const results = await conn.query('INSERT INTO users SET ?', user)
